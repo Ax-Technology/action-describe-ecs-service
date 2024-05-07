@@ -1,18 +1,18 @@
-import core from '@actions/core';
+import { debug, getInput, setFailed, setOutput } from '@actions/core';
 import { DescribeServicesCommand, DescribeServicesCommandOutput, ECSClient } from '@aws-sdk/client-ecs';
 
 async function checkService(): Promise<void> {
-    const region = core.getInput('region', { required: true });
+    const region = getInput('region', { required: true });
 
     const ecsClient = new ECSClient({
         region: region,
     });
 
-    const serviceName = core.getInput('service', { required: true });
-    let clusterName: string | undefined = core.getInput('cluster', { required: false });
+    const serviceName = getInput('service', { required: true });
+    let clusterName: string | undefined = getInput('cluster', { required: false });
 
     if (!clusterName) {
-        core.debug('Using default value for cluster name');
+        debug('Using default value for cluster name');
         clusterName = 'default';
     }
 
@@ -21,14 +21,14 @@ async function checkService(): Promise<void> {
         services: [serviceName],
     });
 
-    core.debug('Sending describe services command');
+    debug('Sending describe services command');
     let describeServicesCommandOutput: DescribeServicesCommandOutput | undefined;
     try {
         describeServicesCommandOutput = await ecsClient.send(command);
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } catch (error: any) {
-        core.setFailed(error);
-        core.debug('Sending describe services command failed');
+        setFailed(error);
+        debug('Sending describe services command failed');
         throw error;
     }
 
@@ -38,15 +38,15 @@ async function checkService(): Promise<void> {
     }
 
     if (!describeServicesCommandOutput.services || describeServicesCommandOutput.services.length === 0) {
-        core.setOutput('exists', false);
-        core.setOutput('service-status', 'UNKNOWN');
-        core.debug('Service does not exists in the cluster');
+        setOutput('exists', false);
+        setOutput('service-status', 'UNKNOWN');
+        debug('Service does not exists in the cluster');
         return;
     }
 
     const service = describeServicesCommandOutput.services[0]!;
 
-    core.setOutput('exists', true);
+    setOutput('exists', true);
 
     const status = service.status;
 
@@ -54,7 +54,7 @@ async function checkService(): Promise<void> {
         throw new Error(`Service status for ${serviceName} not found`);
     }
 
-    core.setOutput('service-status', status);
+    setOutput('service-status', status);
 }
 
 async function run(): Promise<void> {
@@ -62,9 +62,9 @@ async function run(): Promise<void> {
         await checkService();
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } catch (error: any) {
-        core.debug('Failed to send describe services command');
-        core.setFailed(error.message);
-        core.debug(error.stack);
+        debug('Failed to send describe services command');
+        setFailed(error.message);
+        debug(error.stack);
     }
 }
 
