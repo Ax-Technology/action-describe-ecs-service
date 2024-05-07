@@ -1,0 +1,31 @@
+{
+  "name": "github-actions-amazon-ecs-describe-serive",
+  "version": "0.0.1",
+  "description": "Describe ecs service action",
+  "main": "index.js",
+  "scripts": {
+    "lint": "biome check . --apply",
+    "package": "ncc build dist/index.js -o output",
+    "build": "tsc"
+  },
+  "repository": {},
+  "keywords": [
+    "AWS",
+    "GitHub",
+    "Actions",
+    "JavaScript"
+  ],
+  "author": "codykhon",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.1",
+    "@aws-sdk/client-ecs": "^3.569.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.7.3",
+    "@types/node": "^20.12.10",
+    "@vercel/ncc": "^0.38.1",
+    "npm-check-updates": "^16.14.20",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,20 @@
+name: 'Amazon ECS "Describe ECS Service" Action for GitHub Actions'
+description: 'Describes an Amazon ECS service'
+branding:
+  icon: 'cloud'
+  color: 'orange'
+inputs:
+  service:
+    description: 'The name of the ECS service to check to.'
+    required: true
+  cluster:
+    description: "The name of the ECS service's cluster. Will default to the 'default' cluster"
+    required: false
+outputs:
+  exists:
+    description: 'If the service presents in the cluster'
+  service-status:
+    description: 'Status of the service running inside a cluster'
+runs:
+  using: 'node20'
+  main: 'output/index.js'
