@@ -3,11 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.run = void 0;
 const core_1 = require("@actions/core");
 const client_ecs_1 = require("@aws-sdk/client-ecs");
-async function checkService() {
-    const region = (0, core_1.getInput)('region', { required: true });
-    const ecsClient = new client_ecs_1.ECSClient({
-        region: region,
-    });
+async function describeService() {
+    const ecsClient = new client_ecs_1.ECSClient();
     const serviceName = (0, core_1.getInput)('service', { required: true });
     let clusterName = (0, core_1.getInput)('cluster', { required: false });
     if (!clusterName) {
@@ -49,11 +46,11 @@ async function checkService() {
 }
 async function run() {
     try {
-        await checkService();
+        await describeService();
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     }
     catch (error) {
-        (0, core_1.debug)('Failed to send describe services command');
+        (0, core_1.debug)('Failed to run describe service');
         (0, core_1.setFailed)(error.message);
         (0, core_1.debug)(error.stack);
     }
