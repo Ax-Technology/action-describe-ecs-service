@@ -1,12 +1,8 @@
 import { debug, getInput, setFailed, setOutput } from '@actions/core';
 import { DescribeServicesCommand, DescribeServicesCommandOutput, ECSClient } from '@aws-sdk/client-ecs';
 
-async function checkService(): Promise<void> {
-    const region = getInput('region', { required: true });
-
-    const ecsClient = new ECSClient({
-        region: region,
-    });
+async function describeService(): Promise<void> {
+    const ecsClient = new ECSClient();
 
     const serviceName = getInput('service', { required: true });
     let clusterName: string | undefined = getInput('cluster', { required: false });
@@ -59,10 +55,10 @@ async function checkService(): Promise<void> {
 
 async function run(): Promise<void> {
     try {
-        await checkService();
+        await describeService();
         // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     } catch (error: any) {
-        debug('Failed to send describe services command');
+        debug('Failed to run describe service');
         setFailed(error.message);
         debug(error.stack);
     }
