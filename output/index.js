@@ -25869,11 +25869,16 @@ async function describeService() {
     }
     if (describeServicesCommandOutput.failures && describeServicesCommandOutput.failures.length > 0) {
         const failure = describeServicesCommandOutput.failures[0];
-        throw new Error(`${failure.arn} is ${failure.reason}`);
+        if (failure.reason === 'MISSING') {
+            (0, core_1.setOutput)('exists', false);
+            (0, core_1.setOutput)('service-status', 'MISSING');
+        }
+        (0, core_1.debug)('Service does not exists in the cluster');
+        return;
     }
     if (!describeServicesCommandOutput.services || describeServicesCommandOutput.services.length === 0) {
         (0, core_1.setOutput)('exists', false);
-        (0, core_1.setOutput)('service-status', 'UNKNOWN');
+        (0, core_1.setOutput)('service-status', 'MISSING');
         (0, core_1.debug)('Service does not exists in the cluster');
         return;
     }

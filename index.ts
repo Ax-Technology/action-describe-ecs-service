@@ -29,13 +29,18 @@ async function describeService(): Promise<void> {
     }
 
     if (describeServicesCommandOutput.failures && describeServicesCommandOutput.failures.length > 0) {
-        const failure = describeServicesCommandOutput.failures[0];
-        throw new Error(`${failure!.arn} is ${failure!.reason}`);
+        const failure = describeServicesCommandOutput.failures[0]!;
+        if (failure.reason === 'MISSING') {
+            setOutput('exists', false);
+            setOutput('service-status', 'MISSING');
+        }
+        debug('Service does not exists in the cluster');
+        return;
     }
 
     if (!describeServicesCommandOutput.services || describeServicesCommandOutput.services.length === 0) {
         setOutput('exists', false);
-        setOutput('service-status', 'UNKNOWN');
+        setOutput('service-status', 'MISSING');
         debug('Service does not exists in the cluster');
         return;
     }
